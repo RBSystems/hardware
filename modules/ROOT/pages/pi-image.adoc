@@ -1,9 +1,9 @@
 = Take a Pi Image 
 
-We update our Pi image every 4-6 months to keep install times speedy. As part of an install, we update the Pi to make sure it has all the latest security patches, and the further it's been since we updated the image, the longer that update takes. The following is the process we follow to take an image.  
+We update our Pi image every 4-6 months to keep install times speedy. As part of an install, we update the Pi to make sure it has all the latest security patches, and the longer it's been since we updated the image, the longer that update takes. The following is the process we follow to take an image.
 
 == Getting started
-Download the lastest Raspbian image from https://www.raspberrypi.org/downloads/raspbian[the Raspberry Pi Foundation] and flash it onto an SD card. Before inserting the SD card into a Pi, it's helpful to create a file called `ssh` in the `boot`partition so that you can SSH into the Pi once it's plugged in. Once that's done, insert the SD card into the Pi, plug in a network cable, and insert the power cable to turn the Pi on.
+Download the lastest *lite* Raspbian image from https://www.raspberrypi.org/downloads/raspbian[the Raspberry Pi Foundation] and flash it onto an SD card. Before inserting the SD card into a Pi, it's helpful to create a file called `ssh` in the `boot` partition so that you can SSH into the Pi once it's plugged in. Once that's done, insert the SD card into the Pi, plug in a network cable, and insert the power cable to turn the Pi on.
 
 Once the Pi is powered on, you'll be able to SSH into the Pi using the IP address that is printed a few lines above the login line. The default username is `pi` and the default password is `raspberry`.
 
@@ -100,6 +100,7 @@ shutdown -h now
 
 == Create a new image
 Now that we have an SD card with the OS in the state we want it, we need to create an image based on that state. To start, plug the SD card into your computer.
+
 WARNING: Copying the image from an SD card will require the same amount of storage as the _size_ of the SD card. For example, a 32GB SD card will require at least 32GB of free space.
 
 === Take the image
@@ -112,6 +113,7 @@ sudo dd if=/dev/sdb of=/path/to/clone.img <1>
 
 === Shrink image
 Right now, the image matches the size of the SD card; A lot of that space is wasted. https://github.com/Drewsif/PiShrink[Pi Shrink] is a script that will cut out that useless space.
+
 IMPORTANT: Always be careful downloading and running scripts, especially as sudo.
 
 [source,bash]
@@ -120,12 +122,13 @@ curl https://raw.githubusercontent.com/Drewsif/PiShrink/master/pishrink.sh > pis
 chmod +x pishrink.sh
 sudo ./pishrink.sh /path/to/clone.img /path/to/shrunk-image.img <1>
 ----
+<1> Replace `/path/to/` with the appropriate locations
 
 [TIP]
 ====
 If you need to make small changes to the image _after_ you have already taken it:
 
-. Get the start blocks with `fdisk -l /path/to/shrunk-image.img`
+. Get the start blocks with `fdisk -l /path/to/shrunk-image.img`. The output will look like:
 +
 ....
 Disk byuav-2019-08-21.img: 3.56 GiB, 3809141248 bytes, 7439729 sectors
@@ -142,10 +145,17 @@ byuav-2019-08-21.img2      540672 7439728 6899057  3.3G 83 Linux
 . Create directories in `/mnt` to mount each block to (i.e., `mkdir /mnt/piroot`)
 . Mount the block(s) you want to modify, using the start sector from above. In this case, to mount the second block to `/mnt/piroot`, I would use this command:
 +
-	mount -v -o offset=$((512*540672)) -t ext4 byuav-2019-08-21.img `/mnt/piroot`
+[source,bash]
+----
+mount -v -o offset=$((512*540672)) -t ext4 byuav-2019-08-21.img `/mnt/piroot`
+----
 . Modify the images files however you need by adding/modifying/deleting files from `/mnt/piroot`
 . Unmount the block(s)
-	umount /mnt/piroot
++
+[source,bash]
+----
+umount /mnt/piroot
+----
 ====
 
 === Compress image
@@ -154,3 +164,8 @@ To have the smallest image size, use gzip to compress the shrunk image before sh
 ----
 gzip -k -9 /path/to/shrunk-image.img
 ----
+
+=== PiShrink Script
+++++
+<script src="https://gist.github.com/dannyrandall/1b2746cddcd8ddb2168adaa8fe68ee13.js"></script>
+++++
