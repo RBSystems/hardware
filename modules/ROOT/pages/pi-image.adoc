@@ -164,8 +164,3 @@ To have the smallest image size, use gzip to compress the shrunk image before sh
 ----
 gzip -k -9 /path/to/shrunk-image.img
 ----
-
-=== PiShrink Script
-++++
-<script src="https://gist.github.com/dannyrandall/1b2746cddcd8ddb2168adaa8fe68ee13.js"></script>
-++++
