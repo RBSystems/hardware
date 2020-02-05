@@ -1,0 +1,3 @@
+= Hardware
+
+This section documents the specific hardware we use as well as any install instructions for different hardware.

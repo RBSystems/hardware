@@ -1,0 +1,5 @@
+name: hardware
+version: master
+title: Hardware
+nav:
+    - modules/ROOT/nav.adoc
